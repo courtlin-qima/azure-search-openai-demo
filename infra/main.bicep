@@ -9,7 +9,7 @@ param environmentName string
 @description('Primary location for all resources')
 param location string
 
-param appServicePlanName string = 'qima-ls'
+param appServicePlanName string = ''
 param backendServiceName string = ''
 param resourceGroupName string = ''
 
@@ -88,8 +88,8 @@ param computerVisionSkuName string = 'S1'
 param chatGptDeploymentName string // Set in main.parameters.json
 param chatGptDeploymentCapacity int = 30
 param chatGpt4vDeploymentCapacity int = 10
-param chatGptModelName string = startsWith(openAiHost, 'azure') ? 'gpt-35-turbo' : 'gpt-3.5-turbo'
-param chatGptModelVersion string = '0613'
+param chatGptModelName string = startsWith(openAiHost, 'azure') ? 'gpt-35-turbo' : 'gpt-3.5-turbo' //gpt4
+param chatGptModelVersion string = '0613' //1106
 param embeddingDeploymentName string // Set in main.parameters.json
 param embeddingDeploymentCapacity int = 30
 param embeddingModelName string = 'text-embedding-ada-002'
@@ -475,14 +475,15 @@ module storageRoleUser 'core/security/role.bicep' = {
   }
 }
 
+// may need to comment this out if get deployment errors regarding storage contrib role
 module storageContribRoleUser 'core/security/role.bicep' = {
-  scope: storageResourceGroup
-  name: 'storage-contribrole-user'
-  params: {
-    principalId: principalId
-    roleDefinitionId: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
-    principalType: principalType
-  }
+ scope: storageResourceGroup
+ name: 'storage-contribrole-user'
+ params: {
+   principalId: principalId
+   roleDefinitionId: 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
+  principalType: principalType
+ }
 }
 
 // Only create if using managed identity (non-free tier)
